@@ -584,20 +584,22 @@ def readMZML(dirloc_read, sp_dict1_loc, std_dict_loc, proname3,
         FA_comp['1'].to_excel(master, 'Fatty Acid Composition', index=False)
 
         # add standard dictionary and mrm list(spname) info
-        keyinfo_m1 = pd.DataFrame({'Info': [sp_dict1_loc.get('1.0', 'end-1c'),
-                                            std_dict_loc.get('1.0', 'end-1c'),
-                                            iso_dict_loc.get('1.0', 'end-1c'),
+        keyinfo_m1 = pd.DataFrame({'Info': [os.path.basename(sp_dict1_loc.get('1.0', 'end-1c')),
+                                            os.path.basename(std_dict_loc.get('1.0', 'end-1c')),
+                                            os.path.basename(iso_dict_loc.get('1.0', 'end-1c')),
                                             variable_iso.get(),
                                             variable_scans.get(),
                                             variable_std0cut.get(),
-                                            variable_tgt0cut.get()]},
+                                            variable_tgt0cut.get(),
+                                            variable_mute.get()]},
                                   index=['SpName/mrm List',
                                          'Standard Dictionary',
                                          'Isotope Correction List',
-                                         'isotope Corrected',
+                                         'Isotope Corrected',
                                          'scans',
                                          'max 0 std',
-                                         'max 0 unknown'])
+                                         'max 0 unknown',
+                                         'Species Muted'])
         keyinfo_m1.to_excel(master, 'version info', index=True)
 
         master.save()
@@ -629,22 +631,23 @@ def readMZML(dirloc_read, sp_dict1_loc, std_dict_loc, proname3,
         FA_comp['2'].to_excel(master2, 'Fatty Acid Composition', index=False)
 
         # add standard dictionary and mrm list(spname) info
-        keyinfo_m2 = pd.DataFrame({'Info': [sp_dict1_loc.get('1.0', 'end-1c'),
-                                            std_dict_loc.get('1.0', 'end-1c'),
-                                            iso_dict_loc.get('1.0', 'end-1c'),
+        keyinfo_m2 = pd.DataFrame({'Info': [os.path.basename(sp_dict1_loc.get('1.0', 'end-1c')),
+                                            os.path.basename(std_dict_loc.get('1.0', 'end-1c')),
+                                            os.path.basename(iso_dict_loc.get('1.0', 'end-1c')),
                                             variable_iso.get(),
                                             variable_scans.get(),
                                             variable_std0cut.get(),
-                                            variable_tgt0cut.get()]},
+                                            variable_tgt0cut.get(),
+                                            variable_mute.get()]},
                                   index=['SpName/mrm List',
                                          'Standard Dictionary',
                                          'Isotope Correction List',
-                                         'isotope Corrected',
+                                         'Isotope Corrected',
                                          'scans',
                                          'max 0 std',
-                                         'max 0 unknown'])
+                                         'max 0 unknown',
+                                         'Species Muted'])
         keyinfo_m2.to_excel(master2, 'version info', index=True)
-
         master2.save()
         
     # m3
@@ -673,20 +676,22 @@ def readMZML(dirloc_read, sp_dict1_loc, std_dict_loc, proname3,
         FA_comp['3'].to_excel(master3, 'Fatty Acid Composition', index=False)
 
         # add standard dictionary and mrm list(spname) info
-        keyinfo_m3 = pd.DataFrame({'Info': [sp_dict1_loc.get('1.0', 'end-1c'),
-                                            std_dict_loc.get('1.0', 'end-1c'),
-                                            iso_dict_loc.get('1.0', 'end-1c'),
+        keyinfo_m3 = pd.DataFrame({'Info': [os.path.basename(sp_dict1_loc.get('1.0', 'end-1c')),
+                                            os.path.basename(std_dict_loc.get('1.0', 'end-1c')),
+                                            os.path.basename(iso_dict_loc.get('1.0', 'end-1c')),
                                             variable_iso.get(),
                                             variable_scans.get(),
                                             variable_std0cut.get(),
-                                            variable_tgt0cut.get()]},
+                                            variable_tgt0cut.get(),
+                                            variable_mute.get()]},
                                   index=['SpName/mrm List',
                                          'Standard Dictionary',
                                          'Isotope Correction List',
-                                         'isotope Corrected',
+                                         'Isotope Corrected',
                                          'scans',
                                          'max 0 std',
-                                         'max 0 unknown'])
+                                         'max 0 unknown',
+                                         'Species Muted'])
         keyinfo_m3.to_excel(master3, 'version info', index=True)
 
         master3.save()
@@ -713,6 +718,24 @@ def readMZML(dirloc_read, sp_dict1_loc, std_dict_loc, proname3,
         faquant = faquant.reindex(sorted(faquant.columns), axis=1)
         facomp = facomp.reindex(sorted(facomp.columns), axis=1)
 
+        if (len(out_df2_con['3']) > 0):
+            spequant = pd.concat([spequant.iloc[:, 0:], out_df2_con["3"].iloc[:, 1:]], axis=1, sort=False)
+            specomp = pd.concat([specomp.iloc[:, 0:], SP_comp['3'].iloc[:, 1:]], axis=1, sort=False)
+            claquant = pd.concat([claquant.iloc[:, 0:], SP_grp['3'].iloc[:, 1:]], axis=1, sort=False)
+            faquant = pd.concat([faquant.iloc[:, 0:], FA_con['3'].iloc[:, 1:]], axis=1, sort=False)
+            facomp = pd.concat([facomp.iloc[:, 0:], FA_comp['3'].iloc[:, 1:]], axis=1, sort=False)
+
+            # Sort Columns in Merged DataFrames
+            spequant = spequant.reindex(sorted(spequant.columns), axis=1)
+            specomp = specomp.reindex(sorted(specomp.columns), axis=1)
+            claquant = claquant.reindex(sorted(claquant.columns), axis=1)
+            clacomp = claquant.apply(lambda x: 100 * x / x.sum(), axis=1)  # get class composit
+            faquant = faquant.reindex(sorted(faquant.columns), axis=1)
+            facomp = facomp.reindex(sorted(facomp.columns), axis=1)
+
+        else:
+            pass
+
         # Write Master data sheet
         masterMerge = pd.ExcelWriter(proname3.get() + '_output_merge.xlsx')
         spequant.to_excel(masterMerge, 'Species Quant')
@@ -721,6 +744,25 @@ def readMZML(dirloc_read, sp_dict1_loc, std_dict_loc, proname3,
         clacomp.to_excel(masterMerge, 'Class Composit')
         faquant.to_excel(masterMerge, 'FattyAcid Quant')
         facomp.to_excel(masterMerge, 'FattyAcid Composit')
+
+        # add standard dictionary and mrm list(spname) info
+        keyinfo_merge = pd.DataFrame({'Info': [os.path.basename(sp_dict1_loc.get('1.0', 'end-1c')),
+                                               os.path.basename(std_dict_loc.get('1.0', 'end-1c')),
+                                               os.path.basename(iso_dict_loc.get('1.0', 'end-1c')),
+                                               variable_iso.get(),
+                                               variable_scans.get(),
+                                               variable_std0cut.get(),
+                                               variable_tgt0cut.get(),
+                                               variable_mute.get()]},
+                                     index=['SpName/mrm List',
+                                            'Standard Dictionary',
+                                            'Isotope Correction List',
+                                            'Isotope Corrected',
+                                            'scans',
+                                            'max 0 std',
+                                            'max 0 unknown',
+                                            'Species Muted'])
+        keyinfo_merge.to_excel(masterMerge, 'version info', index=True)
         masterMerge.save()
 
     # save intensity
@@ -733,6 +775,25 @@ def readMZML(dirloc_read, sp_dict1_loc, std_dict_loc, proname3,
     if len(out_df2_con['3']) > 0:
         out_df2_intensity['3'] = out_df2_intensity['3'].reindex(sorted(out_df2_intensity['3'].columns), axis=1)
         out_df2_intensity['3'].to_excel(masterint, 'IntensityM3', index=True)
+
+    # add standard dictionary and mrm list(spname) info
+    keyinfo_merge = pd.DataFrame({'Info': [os.path.basename(sp_dict1_loc.get('1.0', 'end-1c')),
+                                               os.path.basename(std_dict_loc.get('1.0', 'end-1c')),
+                                               os.path.basename(iso_dict_loc.get('1.0', 'end-1c')),
+                                               variable_iso.get(),
+                                               variable_scans.get(),
+                                               variable_std0cut.get(),
+                                               variable_tgt0cut.get(),
+                                               variable_mute.get()]},
+                                     index=['SpName/mrm List',
+                                            'Standard Dictionary',
+                                            'Isotope Correction List',
+                                            'Isotope Corrected',
+                                            'scans',
+                                            'max 0 std',
+                                            'max 0 unknown',
+                                            'Species Muted'])
+    keyinfo_merge.to_excel(masterint, 'version info', index=True)
     masterint.save()
 
     messagebox.showinfo("Information", "Done")
