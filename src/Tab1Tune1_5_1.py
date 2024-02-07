@@ -442,18 +442,20 @@ def TuningFun(tunef1, tunef2, maploc_tune,
     pltdata_sm1.COV = pltdata_sm1.COV.astype(float) * cv_step + POS_startcv
 
     # pltdata1 = pd.concat([pltdata1, pltdata_sm1])
-
-    fig1 = plt.figure(num=None, figsize=(10, 4), 
+    sns.set(font_scale=0.5) # reduce font size of axis text
+    fig1 = plt.figure(num=None, figsize=(5, 3), # previously: 10,4
                       dpi=300, facecolor='w', edgecolor='k')
-    ax = sns.lineplot(x="COV", y="Intensity", hue="Species",
-                      data=pltdata1)
+    ax = sns.lineplot(x="COV", y="Intensity", data=pltdata1,
+                      hue="Species",linewidth=0.8)  # added linewidth=0.8
+
+
     for i in range(0, len(peaks_neg)):  # add peak lines [1,2,4,5] for V1
-        ax.axvline(x=peaks_neg[i], linewidth=1, linestyle='--')
+        ax.axvline(x=peaks_neg[i], linewidth=0.9, linestyle='--') # linewidth previously=1
     
     # Shrink current axis by 20%
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.9, box.height])
-    
+
     # Put a legend to the right of the current axis
     ax.legend(loc='upper left', bbox_to_anchor=(1, 1.02),
               handlelength=1,
@@ -462,15 +464,15 @@ def TuningFun(tunef1, tunef2, maploc_tune,
     
     plt.setp(ax.get_legend().get_texts(), fontsize='5') # for legend text
     plt.setp(ax.get_legend().get_title(), fontsize='5') # for legend title
-    
+
     fig1.show()
 
 
-    fig2 = plt.figure(num=None, figsize=(10, 4), dpi=300, facecolor='w', edgecolor='k')
+    fig2 = plt.figure(num=None, figsize=(5, 3), dpi=300, facecolor='w', edgecolor='k') # previously: 10,4
     ax2 = sns.lineplot(x="COV", y="Intensity", hue="Species",
-                      data=pltdata_sm1)
+                      data=pltdata_sm1,linewidth=0.8)
     for i in [0]:  # add peak lines
-        ax2.axvline(x=peaks_pos[i], linewidth=1, linestyle='--')
+        ax2.axvline(x=peaks_pos[i], linewidth=0.9, linestyle='--')
         
     # Shrink current axis by 20%
     box2 = ax2.get_position()
